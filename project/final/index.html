@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Driving Game - Babylon.js</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Latest Babylon.js Core -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <!-- Babylon.js Loaders -->
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Babylon.js GUI -->
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <!-- Babylon.js Materials -->
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <!-- Havok Physics Engine -->
+    <script src="https://cdn.babylonjs.com/havok/HavokPhysics_umd.js"></script>
+</head>
+<body>
+    <div class="game-container">
+        <canvas id="renderCanvas"></canvas>
+        <div id="loadingScreen" class="loading-screen">
+            <div class="loading-text">Loading...</div>
+        </div>
+        <div id="errorScreen" class="error-screen hidden">
+            <div class="error-text">Error initializing game</div>
+            <div id="errorMessage" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Game JavaScript files -->
+    <script src="js/main.js"></script>
+    <script src="js/vehicle.js"></script>
+    <script src="js/environment.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/lighting.js"></script>
+</body>
+</html>

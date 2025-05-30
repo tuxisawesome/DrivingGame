@@ -1,0 +1,430 @@
+/* style.css - Main stylesheet for the 3D driving game */
+
+/* Reset default browser styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background-color: #000;
+}
+
+/* Game container */
+.game-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+/* Canvas */
+#renderCanvas {
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    outline: none;
+}
+
+/* Loading screen */
+.loading-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    transition: opacity 0.5s ease;
+}
+
+.loading-text {
+    color: #fff;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.loading-bar {
+    width: 300px;
+    height: 20px;
+    background-color: #333;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.loading-progress {
+    height: 100%;
+    background-color: #4CAF50;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+/* Error screen */
+.error-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.error-text {
+    color: #f44336;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    color: #fff;
+    font-size: 18px;
+    max-width: 80%;
+    text-align: center;
+}
+
+/* Hide elements */
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Vehicle UI elements */
+.vehicle-ui {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+}
+
+.speedometer {
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 24px;
+    margin-bottom: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.controls-indicator {
+    display: flex;
+    gap: 10px;
+}
+
+.control-key {
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-weight: bold;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.2s ease;
+}
+
+.control-key.active {
+    background-color: rgba(76, 175, 80, 0.7);
+    transform: scale(0.95);
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.7);
+}
+
+/* Camera view indicator */
+.camera-indicator {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+    padding: 5px 10px;
+    color: #fff;
+    font-size: 14px;
+    z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Enhanced Minimap */
+.minimap {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 250px;
+    height: 250px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 10;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+}
+
+.minimap-title {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.minimap-background {
+    position: absolute;
+    top: 30px;
+    left: 15px;
+    width: 220px;
+    height: 220px;
+    background-color: rgba(100, 100, 100, 0.3);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.minimap-area {
+    position: absolute;
+    border-radius: 50%;
+}
+
+.minimap-area.city {
+    background-color: rgba(150, 150, 150, 0.5);
+}
+
+.minimap-area.countryside {
+    background-color: rgba(100, 200, 100, 0.5);
+}
+
+.minimap-highway {
+    position: absolute;
+    background-color: rgba(200, 200, 100, 0.8);
+}
+
+.minimap-player {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: red;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+}
+
+.minimap-compass {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.minimap-compass-needle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 15px;
+    background-color: red;
+    transform: translate(-50%, -50%);
+    transform-origin: center bottom;
+}
+
+.minimap-compass-north {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* Help overlay */
+.help-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    padding: 20px;
+    color: #fff;
+    z-index: 20;
+    max-width: 80%;
+    display: none;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.help-overlay.visible {
+    display: block;
+}
+
+.help-title {
+    font-size: 24px;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #4CAF50;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.help-controls {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.help-key {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    padding: 5px 10px;
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.help-action {
+    padding: 5px 0;
+}
+
+.help-close {
+    text-align: center;
+    margin-top: 15px;
+    font-style: italic;
+}
+
+/* Position display */
+.position-display {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+    padding: 5px 10px;
+    color: #fff;
+    font-size: 14px;
+    z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Controls info */
+.controls-info {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+    padding: 5px 15px;
+    color: #fff;
+    font-size: 14px;
+    z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+/* Terrain indicators */
+.terrain-city {
+    color: #f5f5f5;
+}
+
+.terrain-highway {
+    color: #ffeb3b;
+}
+
+.terrain-countryside {
+    color: #8bc34a;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .minimap {
+        width: 180px;
+        height: 180px;
+    }
+    
+    .minimap-background {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .speedometer {
+        font-size: 20px;
+    }
+    
+    .control-key {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .help-overlay {
+        max-width: 90%;
+        padding: 15px;
+    }
+    
+    .help-title {
+        font-size: 20px;
+    }
+    
+    .help-controls {
+        gap: 5px;
+    }
+    
+    .help-key {
+        padding: 3px 6px;
+        font-size: 12px;
+    }
+    
+    .help-action {
+        font-size: 12px;
+    }
+}
+
+/* Animation for UI elements */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Pulse animation for important elements */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}

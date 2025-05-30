@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lighting Test - 3D Driving Game</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+        .screenshot-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+    <!-- Latest Babylon.js Core -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <!-- Babylon.js Loaders -->
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <!-- Babylon.js GUI -->
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <!-- Babylon.js Materials -->
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <!-- Havok Physics Engine -->
+    <script src="https://cdn.babylonjs.com/havok/HavokPhysics_umd.js"></script>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <button id="screenshotBtn" class="screenshot-button">Take Screenshot</button>
+
+    <script>
+        // Global variables
+        let canvas, engine, scene;
+        let vehicle, environment;
+
+        // Initialize function - called when the page loads
+        async function initTest() {
+            // Get the canvas element
+            canvas = document.getElementById('renderCanvas');
+            
+            // Initialize the Babylon.js engine
+            engine = new BABYLON.Engine(canvas, true, { 
+                preserveDrawingBuffer: true, 
+                stencil: true,
+                disableWebGL2Support: false,
+                adaptToDeviceRatio: true
+            });
+
+            // Create the scene
+            scene = await createScene();
+            
+            // Make the scene available globally
+            window.scene = scene;
+            
+            // Register a render loop to repeatedly render the scene
+            engine.runRenderLoop(() => {
+                if (scene) {
+                    scene.render();
+                }
+            });
+
+            // Watch for browser/canvas resize events
+            window.addEventListener('resize', () => {
+                engine.resize();
+            });
+
+            // Setup screenshot button
+            document.getElementById('screenshotBtn').addEventListener('click', takeScreenshot);
+        }
+
+        // Create the scene
+        async function createScene() {
+            // Create a basic scene
+            const scene = new BABYLON.Scene(engine);
+            
+            // Set a clear color for the scene (sky blue)
+            scene.clearColor = new BABYLON.Color4(0.5, 0.8, 0.9, 1);
+            
+            // Create and position a free camera
+            const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 3, 50, new BABYLON.Vector3(0, 0, 0), scene);
+            camera.attachControl(canvas, true);
+            camera.wheelPrecision = 50;
+            camera.lowerRadiusLimit = 10;
+            camera.upperRadiusLimit = 150;
+            
+            // Create a basic light
+            const hemisphericLight = new BABYLON.HemisphericLight('hemisphericLight', new BABYLON.Vector3(0, 1, 0), scene);
+            hemisphericLight.intensity = 0.7;
+            
+            // Add a directional light for shadows
+            const directionalLight = new BABYLON.DirectionalLight('directionalLight', new BABYLON.Vector3(-0.5, -1, -0.5), scene);
+            directionalLight.intensity = 0.5;
+            directionalLight.position = new BABYLON.Vector3(100, 100, 100);
+            
+            // Create test environment
+            await createTestEnvironment(scene);
+            
+            // Create test vehicle
+            await createTestVehicle(scene);
+            
+            return scene;
+        }
+
+        // Create test environment
+        async function createTestEnvironment(scene) {
+            // Create ground
+            const ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 200, height: 200}, scene);
+            
+            // Create road
+            const road = BABYLON.MeshBuilder.CreateBox("road", {width: 10, height: 0.1, depth: 200}, scene);
+            road.position.y = 0.05;
+            
+            // Create buildings
+            const buildingMeshes = [];
+            for (let i = 0; i < 10; i++) {
+                const height = 5 + Math.random() * 15;
+                const building = BABYLON.MeshBuilder.CreateBox(`building${i}`, {
+                    width: 5 + Math.random() * 5,
+                    height: height,
+                    depth: 5 + Math.random() * 5
+                }, scene);
+                
+                building.position.x = -30 + Math.random() * 60;
+                building.position.y = height / 2;
+                building.position.z = -30 + Math.random() * 60;
+                
+                buildingMeshes.push(building);
+            }
+            
+            // Create water surface
+            const water = BABYLON.MeshBuilder.CreateGround("water", {width: 50, height: 50}, scene);
+            water.position.x = 50;
+            water.position.y = 0.1;
+            water.position.z = 50;
+            
+            // Store environment objects
+            environment = {
+                groundMesh: ground,
+                roadMeshes: [road],
+                buildingMeshes: buildingMeshes,
+                waterMesh: water
+            };
+            
+            // Make environment available globally
+            window.environment = environment;
+        }
+
+        // Create test vehicle
+        async function createTestVehicle(scene) {
+            // Create a simple vehicle mesh
+            const vehicleBody = BABYLON.MeshBuilder.CreateBox("vehicleBody", {width: 4, height: 2, depth: 8}, scene);
+            vehicleBody.position.y = 2;
+            
+            // Create wheels
+            const wheels = [];
+            const wheelPositions = [
+                new BABYLON.Vector3(-2, 0.5, 2.5),
+                new BABYLON.Vector3(2, 0.5, 2.5),
+                new BABYLON.Vector3(-2, 0.5, -2.5),
+                new BABYLON.Vector3(2, 0.5, -2.5)
+            ];
+            
+            for (let i = 0; i < 4; i++) {
+                const wheel = BABYLON.MeshBuilder.CreateCylinder(`wheel${i}`, {
+                    height: 1,
+                    diameter: 2
+                }, scene);
+                
+                wheel.rotation.z = Math.PI / 2;
+                wheel.position = wheelPositions[i];
+                wheels.push(wheel);
+            }
+            
+            // Create windows
+            const windows = BABYLON.MeshBuilder.CreateBox("windows", {width: 3.8, height: 1, depth: 4}, scene);
+            windows.position.y = 2.5;
+            windows.position.z = 1;
+            
+            // Store vehicle objects
+            vehicle = {
+                mesh: vehicleBody,
+                wheels: wheels,
+                windows: windows,
+                color: new BABYLON.Color3(0.8, 0.1, 0.1)
+            };
+            
+            // Make vehicle available globally
+            window.vehicle = vehicle;
+        }
+
+        // Take a screenshot
+        function takeScreenshot() {
+            BABYLON.Tools.CreateScreenshot(engine, scene.activeCamera, {width: 1920, height: 1080}, (data) => {
+                const link = document.createElement('a');
+                link.href = data;
+                link.download = "lighting-screenshot-" + new Date().getTime() + ".png";
+                link.click();
+            });
+        }
+
+        // Initialize the test when the window loads
+        window.addEventListener('DOMContentLoaded', initTest);
+    </script>
+    
+    <!-- Load our lighting.js file -->
+    <script src="js/lighting.js"></script>
+</body>
+</html>
